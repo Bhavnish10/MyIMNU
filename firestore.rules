@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Admin check — add your Nirma email(s) here
+    function isAdmin() {
+      return request.auth != null &&
+        request.auth.token.email in ['bhavnishnanda9933@gmail.com', '22bcm011@nirmauni.ac.in'];
+    }
+
+    // User profiles — own data or admin can read/write
+    match /users/{uid} {
+      allow read:   if request.auth != null && (request.auth.uid == uid || isAdmin());
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow update: if request.auth != null && (request.auth.uid == uid || isAdmin());
+    }
+
+    // Schedule — PUBLIC read (no login needed), admin-only write
+    match /app/schedule {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
+    // Other app docs (competitions etc.) — signed-in users read, admin writes
+    match /app/{docId} {
+      allow read:  if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // Events — public read, any signed-in user can create, creator or admin can delete
+    match /events/{eventId} {
+      allow read:   if true;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null &&
+        (resource.data.postedBy == request.auth.token.email || isAdmin());
+      allow delete: if request.auth != null &&
+        (resource.data.postedBy == request.auth.token.email || isAdmin());
+    }
+
+    // Notes — public read, any signed-in user can create, creator or admin can delete
+    match /notes/{noteId} {
+      allow read:   if true;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null &&
+        (resource.data.postedBy == request.auth.token.email || isAdmin());
+      allow delete: if request.auth != null &&
+        (resource.data.postedBy == request.auth.token.email || isAdmin());
+    }
+
+    // Lost & Found — public read, any signed-in user can create, creator or admin can delete
+    match /lostfound/{itemId} {
+      allow read:   if true;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null &&
+        (resource.data.postedBy == request.auth.token.email || isAdmin());
+      allow delete: if request.auth != null &&
+        (resource.data.postedBy == request.auth.token.email || isAdmin());
+    }
+
+    // Attendance — user can read/write own document only
+    match /attendance/{email} {
+      allow read, write: if request.auth != null && request.auth.token.email == email;
+    }
+
+    // Mess Menu — public read, admin-only write
+    match /menu/{day} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
+    // Chunked file subcollections (for Study Vault large uploads)
+    match /notes/{noteId}/chunks/{chunkId} {
+      allow read:   if true;
+      allow create: if request.auth != null;
+    }
+    match /lostfound_files/{fileId} {
+      allow read:   if true;
+      allow create: if request.auth != null;
+    }
+    match /lostfound_files/{fileId}/chunks/{chunkId} {
+      allow read:   if true;
+      allow create: if request.auth != null;
+    }
+  }
+}

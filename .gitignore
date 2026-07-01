@@ -1,0 +1,15 @@
+# Firebase cache
+.firebase/
+
+# Node modules (if any)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temp/helper scripts
+_data_extract.js
+_sd.js
+_sn.js
+_sk.js
