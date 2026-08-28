@@ -87,6 +87,7 @@ a { color: var(--gold); text-decoration: none; transition: color var(--transitio
 a:hover { color: var(--gold-light); }
 button { cursor: pointer; border: none; background: none; font-family: inherit; color: inherit; }
 input, select, textarea { font-family: inherit; color: var(--text-primary); }
+select { -webkit-appearance:none; -moz-appearance:none; appearance:none; }
 img { max-width: 100%; display: block; }
 ::selection { background: rgba(0,212,255,0.3); color: var(--cream); }
 ::-webkit-scrollbar { width: 6px; }
@@ -367,6 +368,7 @@ img { max-width: 100%; display: block; }
 .feature-card:nth-child(5) .feature-icon { animation-delay: 1.2s; }
 .feature-card:nth-child(6) .feature-icon { animation-delay: 1.5s; }
 .feature-card:nth-child(7) .feature-icon { animation-delay: 1.8s; }
+.feature-card:nth-child(8) .feature-icon { animation-delay: 2.1s; }
 .feature-card h3 { font-size: 13px; font-weight: 700; color: var(--cream); margin: 0; line-height: 1.2; }
 .feature-card p { font-size: 10px; color: var(--text-secondary); line-height: 1.45; margin: 0; opacity: 0.8; }
 .feature-card .tag-inline {
@@ -689,7 +691,7 @@ img { max-width: 100%; display: block; }
 
 /* Home page install button */
 .hero-install-btn {
-  display:none;
+  display:inline-flex;
   background:rgba(0,212,255,0.12); border:1px solid rgba(0,212,255,0.3);
   color:var(--cyan); padding:8px 18px; border-radius:var(--radius-xs);
   font-size:13px; font-weight:600; cursor:pointer; gap:6px;
@@ -697,7 +699,7 @@ img { max-width: 100%; display: block; }
   transition:all 0.2s ease;
 }
 .hero-install-btn:hover { background:rgba(0,212,255,0.2); }
-.hero-install-btn.show { display:inline-flex; }
+.hero-install-btn.hide { display:none; }
 
 /* Device-specific install labels */
 .install-label-desktop { display: none !important; }
@@ -1003,6 +1005,7 @@ img { max-width: 100%; display: block; }
 .feature-card:nth-child(5) { animation-delay:0.25s; }
 .feature-card:nth-child(6) { animation-delay:0.3s; }
 .feature-card:nth-child(7) { animation-delay:0.35s; }
+.feature-card:nth-child(8) { animation-delay:0.4s; }
 .stat-item { animation:scaleIn 0.4s ease backwards; }
 .stat-item:nth-child(1) { animation-delay:0.1s; }
 .stat-item:nth-child(2) { animation-delay:0.15s; }
@@ -1077,6 +1080,70 @@ img { max-width: 100%; display: block; }
 .form-input:focus { border-color:var(--maroon); box-shadow:0 0 0 3px rgba(0,212,255,0.15); }
 textarea.form-input { resize:vertical; min-height:60px; }
 select.form-input { appearance:auto; }
+
+/* ── Custom Dropdown ── */
+.custom-select { position:relative; display:inline-block; width:100%; }
+.custom-select select {
+  position:fixed !important; left:-9999px !important; top:-9999px !important;
+  width:0 !important; height:0 !important; min-width:0 !important; min-height:0 !important;
+  padding:0 !important; margin:0 !important; border:0 !important;
+  opacity:0 !important; visibility:hidden !important;
+  pointer-events:none !important; user-select:none !important; -webkit-user-select:none !important;
+  -webkit-appearance:none !important; -moz-appearance:none !important; appearance:none !important;
+  font-size:16px !important;
+}
+.custom-select-trigger {
+  width:100%; padding:10px 36px 10px 14px; background:var(--bg-input); border:1px solid var(--border);
+  border-radius:var(--radius-xs); color:var(--text-primary); font-size:13px; cursor:pointer;
+  text-align:left; position:relative; transition:all var(--transition); white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; font-family:inherit;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+}
+.custom-select-trigger:hover { border-color:var(--border-light); }
+.custom-select-trigger.open { border-color:var(--maroon); box-shadow:0 0 0 3px rgba(0,212,255,0.15); }
+.custom-select-trigger::after {
+  content:''; position:absolute; right:12px; top:50%; width:8px; height:8px;
+  border-right:2px solid var(--text-secondary); border-bottom:2px solid var(--text-secondary);
+  transform:translateY(-65%) rotate(45deg); transition:transform 0.25s ease;
+}
+.custom-select-trigger.open::after { transform:translateY(-25%) rotate(-135deg); }
+.custom-select-options {
+  position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:999;
+  background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-sm);
+  max-height:0; overflow:hidden; opacity:0;
+  transition:max-height 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease;
+  box-shadow:var(--shadow-lg);
+}
+.custom-select-options.open {
+  max-height:220px; opacity:1; overflow-y:auto;
+}
+.custom-select-options::-webkit-scrollbar { width:5px; }
+.custom-select-options::-webkit-scrollbar-track { background:transparent; }
+.custom-select-options::-webkit-scrollbar-thumb { background:var(--border-light); border-radius:10px; }
+.custom-select-option {
+  padding:10px 14px; font-size:13px; color:var(--cream-muted); cursor:pointer;
+  transition:background 0.15s ease, color 0.15s ease, padding-left 0.2s ease;
+}
+.custom-select-option:hover { background:rgba(0,212,255,0.08); color:var(--cream); padding-left:18px; }
+.custom-select-option.selected { color:var(--maroon); font-weight:600; background:rgba(0,212,255,0.06); }
+.custom-select-option:not(:last-child) { border-bottom:1px solid rgba(255,255,255,0.04); }
+
+/* Variants for toolbar selects (students/freeclass) */
+.custom-select.toolbar-select .custom-select-trigger {
+  background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:10px 36px 10px 14px;
+  font-size:13px;
+}
+.custom-select.toolbar-select .custom-select-options {
+  border-radius:12px;
+}
+
+/* Inline/compact variant for small selects */
+.custom-select.compact .custom-select-trigger {
+  padding:6px 30px 6px 10px; font-size:12px; width:auto; min-width:130px;
+}
+.custom-select.compact .custom-select-trigger::after { right:10px; width:6px; height:6px; }
+.custom-select.compact .custom-select-option { padding:8px 10px; font-size:12px; }
+
 .form-row-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .form-actions { display:flex; gap:8px; margin-top:14px; }
 
@@ -1349,6 +1416,75 @@ html { scroll-behavior:smooth; }
 /* Ensure all content sits above particles */
 .main-content { position:relative; z-index:1; }
 
+/* ── Students Page ── */
+.students-toolbar { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.students-search-wrap {
+  flex:1; min-width:200px; display:flex; align-items:center; gap:8px;
+  background:var(--card-bg); border:1px solid var(--border); border-radius:12px; padding:10px 14px;
+}
+.students-search-wrap input {
+  flex:1; background:none; border:none; outline:none; color:var(--cream); font-size:14px; font-family:inherit;
+}
+.students-search-wrap input::placeholder { color:var(--text-secondary); }
+#studentsSubjectFilter, #studentsDivFilter { /* handled by .custom-select */ }
+.students-toolbar .custom-select { min-width:120px; width:auto; flex-shrink:0; }
+.students-toolbar .custom-select:first-of-type { min-width:140px; }
+
+.students-subject-block { margin-bottom:24px; }
+.students-subject-header {
+  display:flex; align-items:center; gap:10px; margin-bottom:12px; padding-bottom:8px;
+  border-bottom:1px solid var(--border); cursor:pointer; user-select:none;
+}
+.students-subject-header h2 { font-size:16px; font-weight:700; color:var(--gold); margin:0; flex:1; }
+.students-subject-header .stu-count { font-size:12px; color:var(--text-secondary); }
+.students-subject-header .stu-toggle { font-size:12px; color:var(--text-secondary); transition:transform 0.2s; }
+.students-subject-header.collapsed .stu-toggle { transform:rotate(-90deg); }
+
+.students-div-block { margin-bottom:16px; margin-left:4px; }
+.students-div-label {
+  font-size:13px; font-weight:600; color:var(--maroon); margin-bottom:8px;
+  display:flex; align-items:center; gap:6px;
+}
+.students-div-label .div-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:22px; height:22px; border-radius:6px; background:rgba(168,85,247,0.15);
+  color:#c084fc; font-size:11px; font-weight:700;
+}
+
+.stu-table { width:100%; border-collapse:collapse; }
+.stu-table th {
+  text-align:left; font-size:11px; color:var(--text-secondary); font-weight:600;
+  padding:6px 10px; border-bottom:1px solid var(--border); text-transform:uppercase; letter-spacing:0.5px;
+}
+.stu-table td {
+  padding:8px 10px; font-size:13px; color:var(--cream); border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.stu-table tr:hover td { background:rgba(255,255,255,0.03); }
+.stu-table .stu-sr { color:var(--text-secondary); width:40px; }
+.stu-table .stu-roll { color:var(--gold); font-family:'Fira Code',monospace; font-size:12px; width:100px; }
+.stu-no-results { text-align:center; padding:40px 20px; color:var(--text-secondary); font-size:14px; }
+
+/* ── Free Class Page ── */
+.fc-toolbar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.fc-toolbar .custom-select { min-width:160px; width:auto; }
+
+.fc-table { width:100%; border-collapse:collapse; font-size:13px; min-width:600px; }
+.fc-table th {
+  padding:8px 6px; text-align:center; font-size:11px; font-weight:700; color:var(--gold);
+  border-bottom:2px solid var(--border); text-transform:uppercase; letter-spacing:0.5px;
+  background:rgba(255,255,255,0.02); position:sticky; top:0; z-index:1;
+}
+.fc-table td {
+  padding:8px 6px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04);
+  vertical-align:middle;
+}
+.fc-table tr:hover td { background:rgba(255,255,255,0.02); }
+.fc-table .fc-time { font-weight:600; color:var(--cream); white-space:nowrap; text-align:left; font-size:12px; min-width:90px; }
+.fc-free { color:#34d399; font-weight:600; }
+.fc-busy { color:var(--text-secondary); opacity:0.4; font-size:11px; }
+.fc-now-row td { background:rgba(16,185,129,0.08) !important; }
+.fc-now-row .fc-time { color:#34d399; }
+
 </style>
 </head>
 <body>
@@ -1413,6 +1549,14 @@ html { scroll-behavior:smooth; }
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 010-5H6M18 9h1.5a2.5 2.5 0 000-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/><path d="M18 2H6v7a6 6 0 1012 0V2z"/></svg>
     BattleGround
   </button>
+  <button class="drawer-menu-item" onclick="switchTab('students');toggleDrawer()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    ClassMates
+  </button>
+  <button class="drawer-menu-item" onclick="switchTab('freeclass');toggleDrawer()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+    FreeClass
+  </button>
   <div id="drawerAdminItem" style="display:none">
     <button class="drawer-menu-item" onclick="switchTab('admin');toggleDrawer()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4"/></svg>
@@ -1451,6 +1595,9 @@ html { scroll-behavior:smooth; }
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════
+     PASTE NOTICE MODAL
+     ═══════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════
      MAIN CONTENT
      ═══════════════════════════════════════════════════════════════ -->
 <main class="main-content">
@@ -1466,6 +1613,10 @@ html { scroll-behavior:smooth; }
           <button class="btn btn-primary" onclick="handleOpenTimetable()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
             Open MySchedule
+          </button>
+          <button class="btn btn-secondary" onclick="switchTab('students')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            ClassMates
           </button>
           <button class="btn btn-secondary" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Explore features</button>
         </div>
@@ -1520,6 +1671,16 @@ html { scroll-behavior:smooth; }
             <h3>MessMenu</h3>
             <p>Today's menu</p>
           </div>
+          <div class="feature-card" style="--feat-accent:rgba(99,102,241,0.6)" onclick="switchTab('students')">
+            <div class="feature-icon" style="background:rgba(99,102,241,0.15)">👥</div>
+            <h3>ClassMates</h3>
+            <p>Students by subject</p>
+          </div>
+          <div class="feature-card" style="--feat-accent:rgba(16,185,129,0.6)" onclick="switchTab('freeclass')">
+            <div class="feature-icon" style="background:rgba(16,185,129,0.15)">🏫</div>
+            <h3>FreeClass</h3>
+            <p>Find empty rooms</p>
+          </div>
         </div>
       </div>
 
@@ -1552,7 +1713,7 @@ html { scroll-behavior:smooth; }
             <div style="font-size:15px;font-weight:700;color:var(--cream)" id="ttSelName"></div>
           </div>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-sm btn-gold" onclick="downloadICS()" title="Add to Google Calendar" style="position:relative">📅 Add to Calendar</button>
+            <button class="btn btn-sm btn-gold" onclick="downloadICS()" title="Add to Google Calendar" style="position:relative">📅 Calendar</button>
             <button class="btn btn-sm btn-secondary" onclick="clearTTSelection()">✕</button>
           </div>
         </div>
@@ -1565,12 +1726,12 @@ html { scroll-behavior:smooth; }
       <div id="ttAnnounceBanner" style="display:none"></div>
 
       <div class="layout-toggle" id="layoutToggle" style="display:none">
-        <button class="layout-btn active" data-layout="agenda" onclick="setLayout('agenda',this)">Agenda</button>
-        <button class="layout-btn" data-layout="calendar" onclick="setLayout('calendar',this)">Calendar</button>
+        <button class="layout-btn" data-layout="agenda" onclick="setLayout('agenda',this)">Agenda</button>
+        <button class="layout-btn active" data-layout="calendar" onclick="setLayout('calendar',this)">Calendar</button>
       </div>
 
-      <div id="ttAgendaView"></div>
-      <div id="ttCalendarView" style="display:none"></div>
+      <div id="ttAgendaView" style="display:none"></div>
+      <div id="ttCalendarView"></div>
 
       <div class="schedule-empty" id="ttEmpty">
         <div class="icon">👆</div>
@@ -1907,6 +2068,7 @@ html { scroll-behavior:smooth; }
       <div id="adminPanel" style="display:none">
         <div class="admin-tabs">
           <button class="admin-tab active" onclick="switchAdminTab('upload',this)">📥 Upload</button>
+          <button class="admin-tab" onclick="switchAdminTab('overrides',this)">🔄 Classroom</button>
           <button class="admin-tab" onclick="switchAdminTab('accounts',this)">👥 Accounts</button>
           <button class="admin-tab" onclick="switchAdminTab('competitions-admin',this)">🏆 Competitions</button>
         </div>
@@ -1937,6 +2099,35 @@ html { scroll-behavior:smooth; }
           </div>
         </div>
 
+        <!-- Classroom Changes Section -->
+        <div class="admin-section" id="admin-overrides">
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Paste the classroom change / postponement email from MBA Programme Office. Changes apply to all students instantly.</p>
+
+          <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+            <label style="font-size:13px;color:var(--text-secondary);white-space:nowrap">Date:</label>
+            <input type="date" id="adminOverrideDate" style="flex:1;min-width:160px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:#111;font-size:13px;font-family:inherit">
+          </div>
+
+          <textarea id="adminOverrideText" rows="8" placeholder="Paste the email text here...
+Example:
+Following changes have been made in the classroom arrangement of 09.07.2026:
+1) IPM(B), SDM(A) & TQM(A),TQM(B) will be held in E2 classroom.
+2) BM(B), ERP(A),ERP(B) will be held in E1 classroom.
+3) SDM(B) & SDM(C) sessions is postponed." style="width:100%;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--cream);font-size:13px;font-family:inherit;resize:vertical;outline:none"></textarea>
+
+          <div id="adminOverridePreview" style="display:none;margin-top:10px;padding:12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;font-size:12px;max-height:250px;overflow-y:auto"></div>
+
+          <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+            <button class="btn btn-sm" style="background:rgba(99,102,241,0.15);color:#818cf8;border:1px solid rgba(99,102,241,0.3)" onclick="previewAdminOverride()">👁 Preview</button>
+            <button class="btn btn-sm btn-gold" onclick="publishAdminOverride()">🚀 Publish Changes</button>
+          </div>
+
+          <div style="margin-top:24px">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px">Published Overrides</div>
+            <div id="adminOverridesList" style="font-size:13px;color:var(--text-secondary)">Loading...</div>
+          </div>
+        </div>
+
         <!-- Accounts Section -->
         <div class="admin-section" id="admin-accounts">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
@@ -1964,6 +2155,54 @@ html { scroll-behavior:smooth; }
     </div>
   </div>
 
+  <!-- ══════════════ Students Page ══════════════ -->
+  <div class="page" id="page-students">
+    <div class="container">
+      <div class="page-header">
+        <span class="badge" style="background:rgba(99,102,241,0.15);color:#818cf8">Directory</span>
+        <h1>Student <em>Directory</em></h1>
+        <p>Browse students by subject and division</p>
+      </div>
+
+      <div class="students-toolbar">
+        <div class="students-search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;opacity:0.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" id="studentsSearch" placeholder="Search by name or roll number..." oninput="filterStudents()">
+        </div>
+        <select id="studentsSubjectFilter" onchange="onSubjectFilterChange()">
+          <option value="all">All Subjects</option>
+        </select>
+        <select id="studentsDivFilter" onchange="filterStudents()">
+          <option value="all">All Divisions</option>
+        </select>
+      </div>
+
+      <div id="studentsListContainer"></div>
+
+      <div class="footer">MyIMNU · Student Directory</div>
+    </div>
+  </div>
+
+  <!-- ══════════════ Free Class Page ══════════════ -->
+  <div class="page" id="page-freeclass">
+    <div class="container">
+      <div class="page-header">
+        <span class="badge" style="background:rgba(16,185,129,0.15);color:#34d399">Rooms</span>
+        <h1>Free <em>Classrooms</em></h1>
+        <p>See which classrooms are free right now or on any day</p>
+      </div>
+
+      <div class="fc-toolbar">
+        <select id="fcDayFilter" onchange="renderFreeClass()"></select>
+      </div>
+
+      <div id="fcContainer" style="overflow-x:auto"></div>
+      <div id="fcLoading" style="text-align:center;padding:40px;color:var(--text-secondary);display:none">Loading schedule data...</div>
+
+      <div class="footer">MyIMNU · Free Classrooms</div>
+    </div>
+  </div>
+
 </main>
 
 <!-- Bottom Navigation (hidden on home) -->
@@ -1987,6 +2226,10 @@ html { scroll-behavior:smooth; }
   <button class="bnav-btn" data-tab="events" onclick="switchTab('events')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
     <span>Buzz</span>
+  </button>
+  <button class="bnav-btn" data-tab="students" onclick="switchTab('students')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    <span>Students</span>
   </button>
 </nav>
 
@@ -2104,6 +2347,7 @@ let cloudSessions = null;   // timetable data from Firestore
 let cloudClassroomMap = {};  // course→division→classroom mapping from Firestore
 let currentTimetable = [];  // filtered for current student
 let competitionsData = [];
+let cloudOverrides = { classroomChanges: [], postponed: [], announcements: [] }; // admin overrides from Firestore
 
 /* ═══════════════════════════════════════════════════════════
    NAVIGATION
@@ -2160,6 +2404,8 @@ window.switchTab = function(tab, pushHistory = true) {
   if (tab === 'attendance') loadAttendance();
   if (tab === 'menu') loadMenu();
   if (tab === 'admin' && isAdmin) loadAccounts();
+  if (tab === 'students') loadStudents();
+  if (tab === 'freeclass') loadFreeClass();
 
   // Auto-load timetable for logged-in user
   if (tab === 'timetable' && userRoll && cloudSessions && cloudSessions.length > 0 && !selectedTTRoll) {
@@ -2366,6 +2612,7 @@ async function loadCloudSchedule() {
 
 // Load timetable on page start
 loadCloudSchedule();
+loadCloudOverrides();
 
 /* ═══════════════════════════════════════════════════════════
    DRAWER
@@ -2699,9 +2946,63 @@ const SCHEDULE_OVERRIDES = {
     { date: '02/07/2026', codes: ['BM'], divisions: ['A','B','C'], newRoom: 'E2' },
     { date: '02/07/2026', codes: ['SDM','S&DM'], divisions: ['B','C'], newRoom: 'E2' },
     { date: '02/07/2026', codes: ['SBM'], divisions: ['C'], newRoom: 'E3' },
+    // 3 July 2026
+    { date: '03/07/2026', codes: ['IPM'], divisions: ['C'], newRoom: 'E1' },
+    { date: '03/07/2026', codes: ['IPM'], divisions: ['B'], newRoom: 'E2' },
+    { date: '03/07/2026', codes: ['CB'], divisions: ['A'], newRoom: 'E2' },
+    { date: '03/07/2026', codes: ['BI'], divisions: ['B'], newRoom: 'E2' },
+    { date: '03/07/2026', codes: ['BI'], divisions: ['A'], newRoom: 'E2' },
+    { date: '03/07/2026', codes: ['IPM'], divisions: ['D'], newRoom: 'T5' },
+    // 4 July 2026
+    { date: '04/07/2026', codes: ['I&PM','IPM'], divisions: ['B'], newRoom: 'E3' },
+    { date: '04/07/2026', codes: ['SBM'], divisions: ['C'], newRoom: 'E3' },
+    { date: '04/07/2026', codes: ['BM'], divisions: ['B'], newRoom: 'E1' },
+    { date: '04/07/2026', codes: ['ERP'], divisions: ['A','B'], newRoom: 'E1' },
+    { date: '04/07/2026', codes: ['SDM','S&DM'], divisions: ['A'], newRoom: 'E2' },
+    { date: '04/07/2026', codes: ['TQM'], divisions: ['A','B'], newRoom: 'E2' },
+    { date: '04/07/2026', codes: ['SDM','S&DM'], divisions: ['B','C'], newRoom: 'E2' },
+    { date: '04/07/2026', codes: ['MFS'], divisions: ['A','B'], newRoom: 'T3' },
+    // 6 July 2026
+    { date: '06/07/2026', codes: ['IPM','I&PM'], divisions: ['B'], newRoom: 'E1' },
+    { date: '06/07/2026', codes: ['MBC'], divisions: ['B'], newRoom: 'E1' },
+    { date: '06/07/2026', codes: ['FSA'], divisions: ['B'], newRoom: 'E1' },
+    { date: '06/07/2026', codes: ['CB'], divisions: ['A'], newRoom: 'E2' },
+    { date: '06/07/2026', codes: ['BI'], divisions: ['A','B'], newRoom: 'E2' },
+    { date: '06/07/2026', codes: ['IPM','I&PM'], divisions: ['D'], newRoom: 'T5' },
+    { date: '06/07/2026', codes: ['IPM','I&PM'], divisions: ['C'], newRoom: 'T1' },
+    // 7 July 2026 (leg injury accommodation)
+    { date: '07/07/2026', codes: ['I&PM','IPM'], divisions: ['B'], newRoom: 'E2' },
+    { date: '07/07/2026', codes: ['SDM','S&DM'], divisions: ['A'], newRoom: 'E2' },
+    { date: '07/07/2026', codes: ['TQM'], divisions: ['A','B'], newRoom: 'E2' },
+    { date: '07/07/2026', codes: ['BM'], divisions: ['B'], newRoom: 'E1' },
+    { date: '07/07/2026', codes: ['ERP'], divisions: ['A','B'], newRoom: 'E1' },
+    { date: '07/07/2026', codes: ['MFS'], divisions: ['A','B'], newRoom: 'T3' },
+    { date: '07/07/2026', codes: ['MBC'], divisions: ['A'], newRoom: '214' },
+    // 8 July 2026 (leg injury accommodation)
+    { date: '08/07/2026', codes: ['IPM','I&PM'], divisions: ['B'], newRoom: 'E1' },
+    { date: '08/07/2026', codes: ['MBC'], divisions: ['B'], newRoom: 'E1' },
+    { date: '08/07/2026', codes: ['FSA'], divisions: ['B'], newRoom: 'E1' },
+    { date: '08/07/2026', codes: ['CB'], divisions: ['A'], newRoom: 'E2' },
+    { date: '08/07/2026', codes: ['BI'], divisions: ['A','B'], newRoom: 'E2' },
+    { date: '08/07/2026', codes: ['IPM','I&PM'], divisions: ['D'], newRoom: 'T5' },
+    { date: '08/07/2026', codes: ['IPM','I&PM'], divisions: ['C'], newRoom: 'T1' },
+    { date: '08/07/2026', codes: ['MBC'], divisions: ['A'], newRoom: 'T4' },
+    { date: '08/07/2026', codes: ['FSA'], divisions: ['C'], newRoom: 'T3' },
+    // 9 July 2026 (leg injury accommodation)
+    { date: '09/07/2026', codes: ['I&PM','IPM'], divisions: ['B'], newRoom: 'E2' },
+    { date: '09/07/2026', codes: ['TQM'], divisions: ['A','B'], newRoom: 'E2' },
+    { date: '09/07/2026', codes: ['SDM','S&DM'], divisions: ['B'], newRoom: 'E2' },
+    { date: '09/07/2026', codes: ['SDM','S&DM'], divisions: ['A'], newRoom: 'E1' },
+    { date: '09/07/2026', codes: ['BM'], divisions: ['B'], newRoom: 'E1' },
+    { date: '09/07/2026', codes: ['ERP'], divisions: ['A','B'], newRoom: 'E1' },
+    { date: '09/07/2026', codes: ['SBM'], divisions: ['C'], newRoom: 'E3' },
+    { date: '09/07/2026', codes: ['MFS'], divisions: ['A','B'], newRoom: 'T3' },
+    { date: '09/07/2026', codes: ['MBC'], divisions: ['B'], newRoom: '214' },
   ],
   postponed: [
     { dates: ['29/06/2026','01/07/2026','03/07/2026'], codes: ['FSA'], divisions: ['A','B'], reason: 'Postponed (MBA & B.Tech CSEMBA)' },
+    { dates: ['06/07/2026'], codes: ['RMKT'], divisions: ['A','B'], reason: 'Postponed — new schedule TBA' },
+    { dates: ['07/07/2026'], codes: ['SDM','S&DM'], divisions: ['B','C'], reason: 'Postponed — new schedule will be announced later' },
   ],
   // Each announcement has a `date` — only shown on that day
   announcements: [
@@ -2731,8 +3032,52 @@ const SCHEDULE_OVERRIDES = {
       'BM(A), BM(B), BM(C), SDM(B), SDM(C) → <strong>E2</strong>',
       'SBM(C) → <strong>E3</strong>',
     ]},
+    { date: '03/07/2026', title: 'Classroom changes — 3 July 2026 (leg injury accommodation)', items: [
+      'IPM(C) → <strong>E1</strong>',
+      'IPM(B), CB(A), BI(B), BI(A) → <strong>E2</strong>',
+      'IPM(D) → <strong>T5</strong>',
+    ]},
+    { date: '04/07/2026', title: 'Classroom changes — 4 July 2026 (leg injury accommodation)', items: [
+      'BM(B), ERP(A), ERP(B) → <strong>E1</strong>',
+      'SDM(A), TQM(A), TQM(B), SDM(B), SDM(C) → <strong>E2</strong>',
+      'I&PM(B), SBM(C) → <strong>E3</strong>',
+      'MFS(A), MFS(B) → <strong>T3</strong>',
+    ]},
     { date: '04/07/2026', title: 'Schedule update — 4 July 2026', items: [
       'TQM(B) (MBA, B.Tech CSE & IMBA) session at <strong>02:40 – 03:40 PM</strong>',
+    ]},
+    { date: '06/07/2026', title: 'RMKT(A) & RMKT(B) postponed', items: [
+      'RMKT(A) & RMKT(B) sessions on <strong>6 July</strong> are postponed. New schedule will be announced later.',
+    ]},
+    { date: '06/07/2026', title: 'Classroom changes — 6 July 2026 (leg injury accommodation)', items: [
+      'IPM(B), MBC(B), FSA(B) → <strong>E1</strong>',
+      'CB(A), BI(A), BI(B) → <strong>E2</strong>',
+      'IPM(D) → <strong>T5</strong>',
+      'IPM(C) → <strong>T1</strong>',
+    ]},
+    { date: '07/07/2026', title: 'Classroom changes — 7 July 2026 (leg injury accommodation)', items: [
+      'I&PM(B), SDM(A), TQM(A), TQM(B) → <strong>E2</strong>',
+      'BM(B), ERP(A), ERP(B) → <strong>E1</strong>',
+      'MFS(A), MFS(B) → <strong>T3</strong>',
+      'MBC(A) → <strong>214</strong>',
+    ]},
+    { date: '07/07/2026', title: 'SDM(B) & SDM(C) postponed', items: [
+      'SDM(B) & SDM(C) sessions on <strong>7 July</strong> are postponed. New schedule will be announced later.',
+    ]},
+    { date: '08/07/2026', title: 'Classroom changes — 8 July 2026 (leg injury accommodation)', items: [
+      'IPM(B), MBC(B), FSA(B) → <strong>E1</strong>',
+      'CB(A), BI(A), BI(B) → <strong>E2</strong>',
+      'IPM(D) → <strong>T5</strong>',
+      'IPM(C) → <strong>T1</strong>',
+      'MBC(A) → <strong>T4</strong>',
+      'FSA(C) → <strong>T3</strong>',
+    ]},
+    { date: '09/07/2026', title: 'Classroom changes — 9 July 2026 (leg injury accommodation)', items: [
+      'I&PM(B), TQM(A), TQM(B), SDM(B) → <strong>E2</strong>',
+      'SDM(A), BM(B), ERP(A), ERP(B) → <strong>E1</strong>',
+      'SBM(C) → <strong>E3</strong>',
+      'MFS(A), MFS(B) → <strong>T3</strong>',
+      'MBC(B) → <strong>214</strong>',
     ]},
   ],
 };
@@ -2742,15 +3087,19 @@ function normDate(d) { return d.replace(/[.\-]/g,'/'); }
 function todayDateStr() { const t = new Date(); return String(t.getDate()).padStart(2,'0')+'/'+String(t.getMonth()+1).padStart(2,'0')+'/'+t.getFullYear(); }
 
 function applyScheduleOverrides() {
-  const ov = SCHEDULE_OVERRIDES;
   const today = todayDateStr();
+
+  // Merge hardcoded + cloud overrides
+  const allChanges = [...SCHEDULE_OVERRIDES.classroomChanges, ...cloudOverrides.classroomChanges];
+  const allPostponed = [...SCHEDULE_OVERRIDES.postponed, ...cloudOverrides.postponed];
+  const allAnnouncements = [...SCHEDULE_OVERRIDES.announcements, ...cloudOverrides.announcements];
 
   // Apply classroom changes (all dates — timetable data has the date)
   currentTimetable.forEach(c => {
     const cd = normDate(c.date);
     const cc = normCode(c.code);
     // Postponements
-    for (const p of ov.postponed) {
+    for (const p of allPostponed) {
       const matchDate = p.dates.some(d => normDate(d) === cd);
       const matchCode = p.codes.some(co => normCode(co) === cc);
       const matchDiv = p.divisions.includes(c.division);
@@ -2760,7 +3109,7 @@ function applyScheduleOverrides() {
       }
     }
     // Classroom changes
-    for (const ch of ov.classroomChanges) {
+    for (const ch of allChanges) {
       if (normDate(ch.date) !== cd) continue;
       const matchCode = ch.codes.some(co => normCode(co) === cc);
       const matchDiv = ch.divisions.includes(c.division);
@@ -2774,7 +3123,7 @@ function applyScheduleOverrides() {
 
   // Show banner — ONLY for today's announcements
   const bannerEl = document.getElementById('ttAnnounceBanner');
-  const todayAnnouncements = ov.announcements.filter(a => {
+  const todayAnnouncements = allAnnouncements.filter(a => {
     if (a.date) return normDate(a.date) === today;
     if (a.dates) return a.dates.some(d => normDate(d) === today);
     return false;
@@ -4078,7 +4427,260 @@ window.switchAdminTab = function(tab, btn) {
   btn.classList.add('active');
   document.getElementById('admin-' + tab)?.classList.add('active');
   if (tab === 'accounts') loadAccounts();
+  if (tab === 'overrides') { renderAdminOverridesList(); setAdminOverrideDateToday(); }
 };
+
+/* ══════════════ Admin Classroom Overrides (Firestore-backed) ══════════════ */
+
+function setAdminOverrideDateToday() {
+  const t = new Date();
+  document.getElementById('adminOverrideDate').value = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + String(t.getDate()).padStart(2,'0');
+}
+
+// Load overrides from Firestore on app start
+async function loadCloudOverrides() {
+  try {
+    const doc = await db.collection('app').doc('overrides').get();
+    if (doc.exists) {
+      cloudOverrides = doc.data();
+      if (!cloudOverrides.classroomChanges) cloudOverrides.classroomChanges = [];
+      if (!cloudOverrides.postponed) cloudOverrides.postponed = [];
+      if (!cloudOverrides.announcements) cloudOverrides.announcements = [];
+    }
+    console.log('Loaded ' + cloudOverrides.classroomChanges.length + ' cloud overrides');
+  } catch(e) { console.log('loadCloudOverrides error:', e); }
+}
+
+// Parse admin text into override entries
+function parseAdminOverrideText(text, dateStr) {
+  const result = { classroomChanges: [], postponed: [], announcement: null };
+  const lines = text.split(/[\n\r]+/).map(l => l.trim()).filter(Boolean);
+  const announcementItems = [];
+
+  for (const line of lines) {
+    // Postponement
+    if (/\bpostpone[d]?\b/i.test(line)) {
+      const subjects = extractSubjectDivisions(line);
+      if (subjects.length > 0) {
+        // Group by code
+        const codeMap = {};
+        for (const sd of subjects) {
+          const nc = normCode(sd.code);
+          if (!codeMap[nc]) codeMap[nc] = { codes: [sd.code], divisions: [] };
+          if (!codeMap[nc].divisions.includes(sd.division)) codeMap[nc].divisions.push(sd.division);
+          // Add alternate code forms
+          if (sd.code.includes('&') && !codeMap[nc].codes.includes(normCode(sd.code))) codeMap[nc].codes.push(normCode(sd.code));
+        }
+        for (const key of Object.keys(codeMap)) {
+          const entry = codeMap[key];
+          result.postponed.push({
+            dates: [dateStr],
+            codes: entry.codes,
+            divisions: entry.divisions,
+            reason: 'Postponed — new schedule will be announced later'
+          });
+        }
+        // Build announcement text
+        const names = subjects.map(s => s.code + '(' + s.division + ')').join(', ');
+        announcementItems.push(names + ' — <strong>Postponed</strong>');
+      }
+      continue;
+    }
+
+    // Classroom change
+    const roomMatch = line.match(/(?:held in|shifted to|moved to|→|change[d]?\s+to)\s+(?:the\s+)?(?:classroom\s+)?([A-Z]?\d+)\s*(?:classroom|class)?/i) ||
+                      line.match(/\b(E[1-6]|T[1-6])\s+classroom/i) ||
+                      line.match(/(?:held in|shifted to|moved to)\s+(?:the\s+)?(?:classroom\s+)?([A-Z]?\d+)/i);
+
+    if (roomMatch) {
+      const newRoom = roomMatch[1].trim().toUpperCase();
+      const subjects = extractSubjectDivisions(line);
+      if (subjects.length > 0) {
+        // Group by subject code — each code gets ONLY its own divisions (no cross-product)
+        const codeMap = {};
+        for (const sd of subjects) {
+          const nc = normCode(sd.code);
+          if (!codeMap[nc]) codeMap[nc] = { codes: [sd.code], divisions: [] };
+          if (!codeMap[nc].divisions.includes(sd.division)) codeMap[nc].divisions.push(sd.division);
+          if (sd.code.includes('&') && !codeMap[nc].codes.includes(nc)) codeMap[nc].codes.push(nc);
+        }
+        for (const key of Object.keys(codeMap)) {
+          result.classroomChanges.push({
+            date: dateStr,
+            codes: codeMap[key].codes,
+            divisions: codeMap[key].divisions,
+            newRoom: newRoom
+          });
+        }
+        const names = subjects.map(s => s.code + '(' + s.division + ')').join(', ');
+        announcementItems.push(names + ' → <strong>' + newRoom + '</strong>');
+      }
+    }
+  }
+
+  if (announcementItems.length > 0) {
+    const dateObj = parseDateStr(dateStr);
+    const dateLabel = dateObj ? dateObj.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : dateStr;
+    result.announcement = {
+      date: dateStr,
+      title: 'Classroom changes — ' + dateLabel,
+      items: announcementItems
+    };
+  }
+
+  return result;
+}
+
+window.previewAdminOverride = function() {
+  const text = document.getElementById('adminOverrideText').value.trim();
+  if (!text) { toast('Paste the notice text first', 'warning'); return; }
+  const picker = document.getElementById('adminOverrideDate').value;
+  let dateStr;
+  if (picker) {
+    const [y, m, d] = picker.split('-');
+    dateStr = d + '/' + m + '/' + y;
+  } else {
+    dateStr = todayDateStr();
+  }
+
+  const result = parseAdminOverrideText(text, dateStr);
+  const preview = document.getElementById('adminOverridePreview');
+  let html = '<div style="color:var(--text-secondary);margin-bottom:8px"><strong>Preview for <span style="color:var(--gold)">' + dateStr + '</span></strong></div>';
+
+  if (result.classroomChanges.length > 0) {
+    html += '<div style="color:#34d399;margin-bottom:4px"><strong>Room changes:</strong></div>';
+    for (const ch of result.classroomChanges) {
+      html += '<div style="padding-left:8px;color:var(--cream);margin-bottom:2px">' + ch.codes[0] + '(' + ch.divisions.join(',') + ') → <strong>' + ch.newRoom + '</strong></div>';
+    }
+  }
+  if (result.postponed.length > 0) {
+    html += '<div style="color:var(--danger);margin:6px 0 4px"><strong>Postponed:</strong></div>';
+    for (const p of result.postponed) {
+      html += '<div style="padding-left:8px;color:var(--cream);margin-bottom:2px">' + p.codes[0] + '(' + p.divisions.join(',') + ')</div>';
+    }
+  }
+  if (result.classroomChanges.length === 0 && result.postponed.length === 0) {
+    html += '<div style="color:var(--danger)">No changes detected. Make sure the text mentions "held in E2" or "postponed".</div>';
+  }
+
+  if (result.announcement) {
+    html += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);color:var(--text-secondary)"><strong>Announcement banner (shown to students on this date):</strong></div>';
+    html += '<div style="padding-left:8px;color:var(--cream);margin-top:4px">' + result.announcement.items.join('<br>') + '</div>';
+  }
+
+  preview.innerHTML = html;
+  preview.style.display = '';
+};
+
+window.publishAdminOverride = async function() {
+  if (!isAdmin) { toast('Admin access required', 'error'); return; }
+  const text = document.getElementById('adminOverrideText').value.trim();
+  if (!text) { toast('Paste the notice text first', 'warning'); return; }
+  const picker = document.getElementById('adminOverrideDate').value;
+  if (!picker) { toast('Please select a date', 'warning'); return; }
+  const [y, m, d] = picker.split('-');
+  const dateStr = d + '/' + m + '/' + y;
+
+  const result = parseAdminOverrideText(text, dateStr);
+  if (result.classroomChanges.length === 0 && result.postponed.length === 0) {
+    toast('No changes detected. Check the format.', 'error');
+    return;
+  }
+
+  try {
+    // Merge with existing cloud overrides
+    const merged = {
+      classroomChanges: [...cloudOverrides.classroomChanges, ...result.classroomChanges],
+      postponed: [...cloudOverrides.postponed, ...result.postponed],
+      announcements: [...cloudOverrides.announcements],
+      lastUpdatedBy: currentUser.email,
+      lastUpdatedAt: new Date().toISOString()
+    };
+    if (result.announcement) merged.announcements.push(result.announcement);
+
+    await db.collection('app').doc('overrides').set(merged);
+    cloudOverrides = merged;
+
+    toast('Published! All students will see these changes for ' + dateStr, 'success');
+    document.getElementById('adminOverrideText').value = '';
+    document.getElementById('adminOverridePreview').style.display = 'none';
+    renderAdminOverridesList();
+
+    // Re-render current timetable if loaded
+    if (selectedTTRoll) generateTimetable(selectedTTRoll);
+  } catch(e) {
+    toast('Publish failed: ' + e.message, 'error');
+    console.log('publishAdminOverride error:', e);
+  }
+};
+
+window.deleteAdminOverride = async function(dateStr) {
+  if (!isAdmin) return;
+  if (!confirm('Remove all overrides for ' + dateStr + '?')) return;
+  try {
+    cloudOverrides.classroomChanges = cloudOverrides.classroomChanges.filter(ch => normDate(ch.date) !== normDate(dateStr));
+    cloudOverrides.postponed = cloudOverrides.postponed.filter(p => !p.dates.some(d => normDate(d) === normDate(dateStr)));
+    cloudOverrides.announcements = cloudOverrides.announcements.filter(a => {
+      if (a.date) return normDate(a.date) !== normDate(dateStr);
+      if (a.dates) { a.dates = a.dates.filter(d => normDate(d) !== normDate(dateStr)); return a.dates.length > 0; }
+      return true;
+    });
+    cloudOverrides.lastUpdatedBy = currentUser.email;
+    cloudOverrides.lastUpdatedAt = new Date().toISOString();
+    await db.collection('app').doc('overrides').set(cloudOverrides);
+    toast('Removed overrides for ' + dateStr, 'success');
+    renderAdminOverridesList();
+    if (selectedTTRoll) generateTimetable(selectedTTRoll);
+  } catch(e) { toast('Delete failed: ' + e.message, 'error'); }
+};
+
+function renderAdminOverridesList() {
+  const container = document.getElementById('adminOverridesList');
+  if (!container) return;
+  // Group changes by date
+  const dateMap = {};
+  for (const ch of cloudOverrides.classroomChanges) {
+    const d = ch.date;
+    if (!dateMap[d]) dateMap[d] = { changes: [], postponed: [] };
+    dateMap[d].changes.push(ch);
+  }
+  for (const p of cloudOverrides.postponed) {
+    for (const d of (p.dates || [])) {
+      if (!dateMap[d]) dateMap[d] = { changes: [], postponed: [] };
+      dateMap[d].postponed.push(p);
+    }
+  }
+
+  const dates = Object.keys(dateMap).sort((a, b) => {
+    const da = parseDateStr(a), db = parseDateStr(b);
+    return (db || 0) - (da || 0); // newest first
+  });
+
+  if (dates.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted)">No overrides published yet. Use the form above to add classroom changes.</div>';
+    return;
+  }
+
+  let html = '';
+  for (const d of dates) {
+    const entry = dateMap[d];
+    html += '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+    html += '<strong style="color:var(--gold);font-size:13px">📅 ' + d + '</strong>';
+    html += '<button class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);font-size:11px;padding:2px 8px" onclick="deleteAdminOverride(\'' + d + '\')">Remove</button>';
+    html += '</div>';
+    for (const ch of entry.changes) {
+      const label = ch.codes[0] + '(' + ch.divisions.join(',') + ')';
+      html += '<div style="font-size:12px;color:var(--cream);padding-left:8px">' + label + ' → <strong>' + ch.newRoom + '</strong></div>';
+    }
+    for (const p of entry.postponed) {
+      const label = p.codes[0] + '(' + p.divisions.join(',') + ')';
+      html += '<div style="font-size:12px;color:var(--danger);padding-left:8px">' + label + ' — Postponed</div>';
+    }
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
 
 /* ═══════════════════════════════════════════════════════════
    TOAST
@@ -4596,10 +5198,6 @@ window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _deferredInstallPrompt = e;
 
-  // Show hero install button
-  const heroBtn = document.getElementById('heroInstallBtn');
-  if (heroBtn) heroBtn.classList.add('show');
-
   // Show bottom banner after 3 seconds (if not dismissed before)
   if (!localStorage.getItem('myimnu_install_dismissed')) {
     setTimeout(() => {
@@ -4613,7 +5211,12 @@ window.addEventListener('beforeinstallprompt', e => {
 window.installPWA = async function() {
   if (!_deferredInstallPrompt) {
     // Fallback for iOS / browsers that don't support beforeinstallprompt
-    toast('To install: tap your browser\'s Share button → "Add to Home Screen"');
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      toast('Tap the Share button (⬆) at the bottom → "Add to Home Screen"', 'info');
+    } else {
+      toast('Open browser menu (⋮) → "Install app" or "Add to Home Screen"', 'info');
+    }
     return;
   }
   _deferredInstallPrompt.prompt();
@@ -4623,7 +5226,7 @@ window.installPWA = async function() {
   }
   _deferredInstallPrompt = null;
   document.getElementById('installBanner').classList.remove('show');
-  document.getElementById('heroInstallBtn').classList.remove('show');
+  document.getElementById('heroInstallBtn').classList.add('hide');
 };
 
 window.dismissInstall = function() {
@@ -4635,16 +5238,15 @@ window.dismissInstall = function() {
 window.addEventListener('appinstalled', () => {
   _deferredInstallPrompt = null;
   document.getElementById('installBanner').classList.remove('show');
-  document.getElementById('heroInstallBtn').classList.remove('show');
+  document.getElementById('heroInstallBtn').classList.add('hide');
   toast('MyIMNU installed successfully!', 'success');
 });
 
-// Detect standalone mode (already installed)
+// Detect standalone mode (already installed) — hide install button
 if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
-  // Already running as app — no need to show install prompts
   document.addEventListener('DOMContentLoaded', () => {
     const heroBtn = document.getElementById('heroInstallBtn');
-    if (heroBtn) heroBtn.style.display = 'none';
+    if (heroBtn) heroBtn.classList.add('hide');
   });
 }
 
@@ -4740,6 +5342,442 @@ auth.onAuthStateChanged(() => {
   setTimeout(checkAllNotifications, 2000);
   loadStudentNames();
 });
+
+/* ══════════════ Students Directory ══════════════ */
+let _studentsRendered = false;
+const _collapsedSubjects = new Set();
+
+window.loadStudents = function() {
+  if (_studentsRendered) return;
+  _studentsRendered = true;
+
+  // Populate subject filter dropdown
+  const filterEl = document.getElementById('studentsSubjectFilter');
+  filterEl.disabled = false;
+  const subjectCodes = Object.keys(SUBJECT_NAMES).filter(c => c !== 'S&DM'); // skip alias
+  subjectCodes.sort((a, b) => SUBJECT_NAMES[a].localeCompare(SUBJECT_NAMES[b]));
+  subjectCodes.forEach(code => {
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = code;
+    filterEl.appendChild(opt);
+  });
+  filterEl.disabled = true;
+  refreshCustomSelect('studentsSubjectFilter');
+
+  renderStudents();
+};
+
+function buildStudentIndex() {
+  // Build: { subjectCode: { division: [{roll, name},...] } }
+  const index = {};
+  for (const roll of rollNumbers) {
+    const subjects = STUDENT_DATA[roll];
+    const name = STUDENT_NAMES[roll] || roll;
+    for (const [code, div] of Object.entries(subjects)) {
+      // Skip alias codes to avoid duplicates
+      if (code === 'S&DM') continue;
+      if (!index[code]) index[code] = {};
+      if (!index[code][div]) index[code][div] = [];
+      index[code][div].push({ roll, name });
+    }
+  }
+  // Sort each division list by roll number
+  for (const code of Object.keys(index)) {
+    for (const div of Object.keys(index[code])) {
+      index[code][div].sort((a, b) => a.roll.localeCompare(b.roll));
+    }
+  }
+  return index;
+}
+
+function renderStudents(searchTerm, subjectFilter, divFilter) {
+  const container = document.getElementById('studentsListContainer');
+  const index = buildStudentIndex();
+  const search = (searchTerm || '').trim().toLowerCase();
+  const subjFilter = subjectFilter || 'all';
+  const divF = divFilter || 'all';
+
+  let codes = Object.keys(index);
+  codes.sort((a, b) => (SUBJECT_NAMES[a] || a).localeCompare(SUBJECT_NAMES[b] || b));
+
+  if (subjFilter !== 'all') codes = codes.filter(c => c === subjFilter);
+
+  let html = '';
+  let totalShown = 0;
+
+  for (const code of codes) {
+    let divs = Object.keys(index[code]).sort();
+    if (divF !== 'all') divs = divs.filter(d => d === divF);
+    let subjectHtml = '';
+    let subjectCount = 0;
+
+    for (const div of divs) {
+      let students = index[code][div];
+      if (search) {
+        students = students.filter(s =>
+          s.name.toLowerCase().includes(search) || s.roll.toLowerCase().includes(search)
+        );
+      }
+      if (students.length === 0) continue;
+      subjectCount += students.length;
+
+      const divLabel = div === 'ALL' ? 'All Students' : 'Division ' + div;
+      subjectHtml += '<div class="students-div-block">';
+      subjectHtml += '<div class="students-div-label"><span class="div-badge">' + (div === 'ALL' ? '*' : div) + '</span> ' + divLabel + ' <span style="color:var(--text-secondary);font-size:11px">(' + students.length + ')</span></div>';
+      subjectHtml += '<table class="stu-table"><thead><tr><th>#</th><th>Roll No.</th><th>Name</th></tr></thead><tbody>';
+      students.forEach((s, i) => {
+        subjectHtml += '<tr><td class="stu-sr">' + (i + 1) + '</td><td class="stu-roll">' + s.roll + '</td><td>' + s.name + '</td></tr>';
+      });
+      subjectHtml += '</tbody></table></div>';
+    }
+
+    if (subjectCount === 0) continue;
+    totalShown += subjectCount;
+
+    const collapsed = _collapsedSubjects.has(code);
+    html += '<div class="students-subject-block" data-subject="' + code + '">';
+    html += '<div class="students-subject-header' + (collapsed ? ' collapsed' : '') + '" onclick="toggleSubjectBlock(\'' + code + '\')">';
+    html += '<h2>' + code + ' — ' + (SUBJECT_NAMES[code] || '') + '</h2>';
+    html += '<span class="stu-count">' + subjectCount + ' students</span>';
+    html += '<span class="stu-toggle">▼</span></div>';
+    html += '<div class="students-subject-content"' + (collapsed ? ' style="display:none"' : '') + '>' + subjectHtml + '</div>';
+    html += '</div>';
+  }
+
+  if (totalShown === 0) {
+    html = '<div class="stu-no-results">No students found matching your search.</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+window.onSubjectFilterChange = function() {
+  const subj = document.getElementById('studentsSubjectFilter').value;
+  const divEl = document.getElementById('studentsDivFilter');
+  // Reset division dropdown
+  divEl.disabled = false;
+  divEl.innerHTML = '<option value="all">All Divisions</option>';
+  if (subj !== 'all') {
+    const index = buildStudentIndex();
+    const divs = Object.keys(index[subj] || {}).sort();
+    divs.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d;
+      opt.textContent = d === 'ALL' ? 'All Students' : 'Division ' + d;
+      divEl.appendChild(opt);
+    });
+  }
+  divEl.disabled = true;
+  refreshCustomSelect('studentsDivFilter');
+  filterStudents();
+};
+
+window.filterStudents = function() {
+  const search = document.getElementById('studentsSearch').value;
+  const subj = document.getElementById('studentsSubjectFilter').value;
+  const div = document.getElementById('studentsDivFilter').value;
+  renderStudents(search, subj, div);
+};
+
+window.toggleSubjectBlock = function(code) {
+  if (_collapsedSubjects.has(code)) _collapsedSubjects.delete(code);
+  else _collapsedSubjects.add(code);
+  const block = document.querySelector('.students-subject-block[data-subject="' + code + '"]');
+  if (!block) return;
+  const header = block.querySelector('.students-subject-header');
+  const content = block.querySelector('.students-subject-content');
+  header.classList.toggle('collapsed');
+  content.style.display = content.style.display === 'none' ? '' : 'none';
+};
+
+/* ══════════════ Free Classrooms ══════════════ */
+const FC_ROOMS = ['E1','E2','E3','E4','E5','E6','T1','T2','T3','T4','T5','T6'];
+let _fcInited = false;
+
+window.loadFreeClass = function() {
+  if (!cloudSessions || cloudSessions.length === 0) {
+    document.getElementById('fcLoading').style.display = '';
+    document.getElementById('fcLoading').textContent = 'No schedule data loaded yet. Please wait or visit MySchedule first.';
+    document.getElementById('fcContainer').innerHTML = '';
+    return;
+  }
+  document.getElementById('fcLoading').style.display = 'none';
+
+  if (!_fcInited) {
+    _fcInited = true;
+    populateFCDayFilter();
+  }
+  renderFreeClass();
+};
+
+function populateFCDayFilter() {
+  const sel = document.getElementById('fcDayFilter');
+  // Collect unique date+day combos from cloudSessions, sorted by date
+  const dayMap = {};
+  for (const s of cloudSessions) {
+    if (s.date && s.day) dayMap[s.date] = s.day;
+  }
+  const dates = Object.keys(dayMap).sort((a, b) => parseDateStr(a) - parseDateStr(b));
+
+  // Find today's date in dd/mm/yyyy format
+  const now = new Date();
+  const todayStr = String(now.getDate()).padStart(2,'0') + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + now.getFullYear();
+
+  sel.disabled = false;
+  sel.innerHTML = '';
+  let todayFound = false;
+  for (const d of dates) {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = dayMap[d] + ' — ' + d;
+    if (d === todayStr) { opt.selected = true; todayFound = true; }
+    sel.appendChild(opt);
+  }
+  // If today not in schedule, pick the nearest future date
+  if (!todayFound && dates.length > 0) {
+    const nowTs = now.getTime();
+    let best = dates[0];
+    for (const d of dates) {
+      if (parseDateStr(d).getTime() >= nowTs) { best = d; break; }
+    }
+    sel.value = best;
+  }
+  sel.disabled = true;
+  refreshCustomSelect('fcDayFilter');
+}
+
+window.renderFreeClass = function() {
+  const container = document.getElementById('fcContainer');
+  const selectedDate = document.getElementById('fcDayFilter').value;
+  if (!selectedDate || !cloudSessions) { container.innerHTML = ''; return; }
+
+  // Gather all sessions for this date
+  const sessionsForDate = cloudSessions.filter(s => s.date === selectedDate);
+
+  // Collect unique time slots, sorted
+  const timeSet = new Set();
+  for (const s of sessionsForDate) {
+    if (s.time) timeSet.add(s.time);
+  }
+  const timeSlots = Array.from(timeSet).sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
+
+  if (timeSlots.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary)">No sessions scheduled for this date.</div>';
+    return;
+  }
+
+  // For each time slot, find which rooms are occupied across ALL divisions
+  // occupancy[timeSlot] = { room: Set of "CODE(DIV)" labels }
+  const occupancy = {};
+  for (const t of timeSlots) occupancy[t] = {};
+
+  // Build override map for this date: "CODE|DIV" → newRoom (hardcoded + cloud)
+  const overrideRoomMap = {};
+  const allFcChanges = [...(SCHEDULE_OVERRIDES.classroomChanges || []), ...(cloudOverrides.classroomChanges || [])];
+  for (const ch of allFcChanges) {
+    if (ch.date !== selectedDate) continue;
+    for (const code of ch.codes) {
+      for (const div of ch.divisions) {
+        overrideRoomMap[code.toUpperCase() + '|' + div.toUpperCase()] = ch.newRoom.trim().toUpperCase();
+      }
+    }
+  }
+
+  for (const s of sessionsForDate) {
+    if (!s.time || !s.cell) continue;
+    const slot = s.time;
+
+    // Parse cell to get ALL subject+division combos running in this slot
+    const parts = s.cell.split('/');
+    for (const part of parts) {
+      const trimmed = part.trim();
+      const m = trimmed.match(/^(.+?)\(([A-Z,\s&]+)\)/i);
+      if (m) {
+        const code = m[1].trim();
+        const divLetters = m[2].match(/[A-Z]/gi) || [];
+        for (const div of divLetters) {
+          const D = div.toUpperCase();
+          const overrideKey = code.toUpperCase() + '|' + D;
+          const normKey = normalizeCode(code).toUpperCase() + '|' + D;
+          // Check override first, then classroomMap, then session.classroom
+          let room = overrideRoomMap[overrideKey] || overrideRoomMap[normKey] || '';
+          if (!room) {
+            const cMap = cloudClassroomMap[code] || cloudClassroomMap[normalizeCode(code)] || {};
+            room = (cMap[D] || '').trim().toUpperCase();
+          }
+          if (!room && s.classroom) room = s.classroom.trim().toUpperCase();
+          if (room && FC_ROOMS.includes(room)) {
+            if (!occupancy[slot][room]) occupancy[slot][room] = new Set();
+            occupancy[slot][room].add(code + '(' + D + ')');
+          }
+        }
+      }
+    }
+  }
+
+  // Detect current time slot
+  const now = new Date();
+  const todayStr = String(now.getDate()).padStart(2,'0') + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + now.getFullYear();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  let currentSlot = null;
+  if (selectedDate === todayStr) {
+    for (const t of timeSlots) {
+      const parts = t.split(/[-–to]/i).map(p => p.trim());
+      if (parts.length >= 2) {
+        const startM = timeToMinutes(parts[0]);
+        const endM = timeToMinutes(parts[1]);
+        if (nowMins >= startM && nowMins < endM) { currentSlot = t; break; }
+      }
+    }
+  }
+
+  // Build table
+  let html = '<table class="fc-table"><thead><tr><th>Time</th>';
+  for (const room of FC_ROOMS) html += '<th>' + room + '</th>';
+  html += '</tr></thead><tbody>';
+
+  for (const t of timeSlots) {
+    const isNow = (t === currentSlot);
+    html += '<tr class="' + (isNow ? 'fc-now-row' : '') + '">';
+    html += '<td class="fc-time">' + t + (isNow ? ' <span style="font-size:9px;color:#34d399">NOW</span>' : '') + '</td>';
+    for (const room of FC_ROOMS) {
+      const labels = occupancy[t][room];
+      if (labels && labels.size > 0) {
+        const tip = Array.from(labels).join(', ');
+        html += '<td class="fc-busy" title="' + tip + '">' + tip + '</td>';
+      } else {
+        html += '<td class="fc-free">Free</td>';
+      }
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  container.innerHTML = html;
+};
+
+/* ══════════════ Custom Dropdown System ══════════════ */
+function initCustomSelect(sel) {
+  if (sel.closest('.custom-select')) return; // already wrapped
+  const wrapper = document.createElement('div');
+  wrapper.className = 'custom-select';
+
+  // Determine variant class
+  if (sel.closest('.students-toolbar') || sel.closest('.fc-toolbar')) wrapper.classList.add('toolbar-select');
+  if (sel.id === 'noteSubjectFilter') wrapper.classList.add('compact');
+
+  // Copy inline styles that affect sizing
+  if (sel.style.width) wrapper.style.width = sel.style.width;
+  if (sel.style.minWidth) wrapper.style.minWidth = sel.style.minWidth;
+  if (sel.style.flex) wrapper.style.flex = sel.style.flex;
+  if (sel.style.flexShrink) wrapper.style.flexShrink = sel.style.flexShrink;
+
+  sel.parentNode.insertBefore(wrapper, sel);
+  wrapper.appendChild(sel);
+
+  // Prevent mobile browsers from triggering native picker
+  sel.setAttribute('tabindex', '-1');
+  sel.setAttribute('aria-hidden', 'true');
+  sel.disabled = true;
+  sel.addEventListener('focus', function(e) { e.preventDefault(); sel.blur(); });
+  sel.addEventListener('mousedown', function(e) { e.preventDefault(); });
+  sel.addEventListener('touchstart', function(e) { e.preventDefault(); }, { passive: false });
+
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'custom-select-trigger';
+  wrapper.appendChild(trigger);
+
+  const optionsBox = document.createElement('div');
+  optionsBox.className = 'custom-select-options';
+  wrapper.appendChild(optionsBox);
+
+  function buildOptions() {
+    optionsBox.innerHTML = '';
+    const selected = sel.value;
+    const labelEl = sel.options[sel.selectedIndex];
+    trigger.textContent = labelEl ? labelEl.textContent : '';
+    for (let i = 0; i < sel.options.length; i++) {
+      const opt = sel.options[i];
+      const div = document.createElement('div');
+      div.className = 'custom-select-option' + (opt.value === selected ? ' selected' : '');
+      div.textContent = opt.textContent;
+      div.dataset.value = opt.value;
+      div.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sel.disabled = false;
+        sel.value = opt.value;
+        sel.disabled = true;
+        trigger.textContent = opt.textContent;
+        optionsBox.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
+        div.classList.add('selected');
+        closeDropdown();
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      optionsBox.appendChild(div);
+    }
+  }
+
+  function closeDropdown() {
+    trigger.classList.remove('open');
+    optionsBox.classList.remove('open');
+  }
+
+  trigger.addEventListener('click', function(e) {
+    e.stopPropagation();
+    // Close all other open dropdowns first
+    document.querySelectorAll('.custom-select-trigger.open').forEach(t => {
+      if (t !== trigger) { t.classList.remove('open'); t.nextElementSibling.classList.remove('open'); }
+    });
+    const isOpen = trigger.classList.toggle('open');
+    optionsBox.classList.toggle('open', isOpen);
+    if (isOpen) {
+      buildOptions();
+      // Scroll selected option into view
+      const selOpt = optionsBox.querySelector('.selected');
+      if (selOpt) setTimeout(() => selOpt.scrollIntoView({ block:'nearest' }), 50);
+    }
+  });
+
+  buildOptions();
+  // Store rebuild function on the select element
+  sel._csRebuild = buildOptions;
+}
+
+function refreshCustomSelect(selectId) {
+  const sel = document.getElementById(selectId);
+  if (sel && sel._csRebuild) {
+    sel.disabled = false;
+    sel._csRebuild();
+    sel.disabled = true;
+  }
+}
+
+// Close all dropdowns on outside click
+document.addEventListener('click', function() {
+  document.querySelectorAll('.custom-select-trigger.open').forEach(t => {
+    t.classList.remove('open');
+    t.nextElementSibling.classList.remove('open');
+  });
+});
+
+// Init all selects — module scripts run after DOM is ready
+document.querySelectorAll('select').forEach(initCustomSelect);
+
+/* ══════════════ Subject Division Parser (used by admin overrides) ══════════════ */
+function extractSubjectDivisions(text) {
+  const results = [];
+  const regex = /([A-Z][A-Z&]{1,5})\s*\(\s*([A-Z](?:\s*[,&]\s*[A-Z])*)\s*\)/gi;
+  let m;
+  while ((m = regex.exec(text)) !== null) {
+    const code = m[1].trim();
+    const divLetters = m[2].match(/[A-Z]/gi) || [];
+    for (const d of divLetters) {
+      results.push({ code: code, division: d.toUpperCase() });
+    }
+  }
+  return results;
+}
 
 </script>
 </body>

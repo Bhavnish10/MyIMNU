@@ -21,6 +21,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Overrides — PUBLIC read (classroom changes apply to everyone), admin-only write
+    match /app/overrides {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
     // Other app docs (competitions etc.) — signed-in users read, admin writes
     match /app/{docId} {
       allow read:  if request.auth != null;
