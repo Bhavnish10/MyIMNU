@@ -2470,15 +2470,7 @@ let cloudOverrides = { classroomChanges: [], postponed: [], announcements: [] };
 let _authResolved = false;
 
 window.switchTab = function(tab, pushHistory = true) {
-  // Gate: require login for everything except home
-  // Only auto-trigger sign-in if auth has already resolved (prevents re-login on page load)
-  if (tab !== 'home' && !currentUser) {
-    if (_authResolved) {
-      toast('Please sign in with your Nirma ID to access this feature.', 'warning');
-      signIn();
-    }
-    return;
-  }
+  // Allow public access to all navigation tabs (Timetable, Events, Notes, Competitions, Menu, etc.)
 
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const page = document.getElementById('page-' + tab);
@@ -2983,7 +2975,8 @@ function parseCell(cellValue, studentDivisions) {
    GENERATE TIMETABLE FROM CLOUD DATA
    ═══════════════════════════════════════════════════════════ */
 function generateTimetable(roll) {
-  roll = roll.trim().toUpperCase();
+  if (!roll) return;
+  roll = String(roll).trim().toUpperCase();
   if (!STUDENT_DATA[roll]) { toast('Roll number not found', 'error'); return; }
   if (!cloudSessions || cloudSessions.length === 0) { toast('No timetable data available', 'error'); return; }
 
