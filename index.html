@@ -2470,55 +2470,65 @@ let cloudOverrides = { classroomChanges: [], postponed: [], announcements: [] };
 let _authResolved = false;
 
 window.switchTab = function(tab, pushHistory = true) {
-  // Allow public access to all navigation tabs (Timetable, Events, Notes, Competitions, Menu, etc.)
+  try {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const page = document.getElementById('page-' + tab);
+    if (page) page.classList.add('active');
+    window.scrollTo(0, 0);
 
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const page = document.getElementById('page-' + tab);
-  if (page) page.classList.add('active');
-  window.scrollTo(0, 0);
+    if (pushHistory) {
+      history.pushState({ tab: tab }, '', '#' + tab);
+    }
 
-  // History API — push state for back button support
-  if (pushHistory) {
-    history.pushState({ tab: tab }, '', '#' + tab);
-  }
+    const fabHome = document.getElementById('fabHome');
+    if (fabHome) fabHome.classList.toggle('show', tab !== 'home');
 
-  // Floating home arrow — show on all pages except home
-  const fabHome = document.getElementById('fabHome');
-  if (fabHome) fabHome.classList.toggle('show', tab !== 'home');
+    const bottomNav = document.getElementById('bottomNav');
+    if (bottomNav) {
+      bottomNav.classList.toggle('show', tab !== 'home');
+      bottomNav.querySelectorAll('.bnav-btn').forEach(btn => {
+        const t = btn.getAttribute('data-tab');
+        btn.style.display = (t === tab) ? 'none' : '';
+        btn.classList.toggle('active', false);
+      });
+    }
 
-  // Bottom nav — show on all pages except home; hide current tab's button
-  const bottomNav = document.getElementById('bottomNav');
-  if (bottomNav) {
-    bottomNav.classList.toggle('show', tab !== 'home');
-    bottomNav.querySelectorAll('.bnav-btn').forEach(btn => {
-      const t = btn.getAttribute('data-tab');
-      btn.style.display = (t === tab) ? 'none' : '';
-      btn.classList.toggle('active', false);
-    });
-  }
+    const adminLocked = document.getElementById('adminLocked');
+    const adminPanel = document.getElementById('adminPanel');
+    if (tab === 'admin') {
+      if (adminLocked) adminLocked.style.display = isAdmin ? 'none' : '';
+      if (adminPanel) adminPanel.style.display = isAdmin ? '' : 'none';
+      if (isAdmin) loadAccounts();
+    }
 
-  if (tab === 'admin' && !isAdmin) {
-    document.getElementById('adminLocked').style.display = '';
-    document.getElementById('adminPanel').style.display = 'none';
-  }
-  if (tab === 'events') { loadEvents(); document.getElementById('fabEvent').style.display = currentUser ? '' : 'none'; }
-  else { document.getElementById('fabEvent').style.display = 'none'; }
-  if (tab === 'notes') { loadNotes(); document.getElementById('fabNote').style.display = currentUser ? '' : 'none'; }
-  else { document.getElementById('fabNote').style.display = 'none'; }
-  if (tab === 'lostfound') { loadLostFound(); document.getElementById('fabLF').style.display = currentUser ? '' : 'none'; }
-  else { document.getElementById('fabLF').style.display = 'none'; }
-  if (tab === 'competitions') loadCompetitions();
-  if (tab === 'attendance') loadAttendance();
-  if (tab === 'menu') loadMenu();
-  if (tab === 'admin' && isAdmin) loadAccounts();
-  if (tab === 'students') loadStudents();
-  if (tab === 'freeclass') loadFreeClass();
+    const fabEvent = document.getElementById('fabEvent');
+    if (fabEvent) fabEvent.style.display = (tab === 'events' && currentUser) ? '' : 'none';
+    if (tab === 'events') loadEvents();
 
-  // Auto-load timetable for logged-in user
-  if (tab === 'timetable' && userRoll && cloudSessions && cloudSessions.length > 0 && !selectedTTRoll) {
-    selectedTTRoll = userRoll;
-    document.getElementById('ttSearchInput').value = userRoll;
-    generateTimetable(userRoll);
+    const fabNote = document.getElementById('fabNote');
+    if (fabNote) fabNote.style.display = (tab === 'notes' && currentUser) ? '' : 'none';
+    if (tab === 'notes') loadNotes();
+
+    const fabLF = document.getElementById('fabLF');
+    if (fabLF) fabLF.style.display = (tab === 'lostfound' && currentUser) ? '' : 'none';
+    if (tab === 'lostfound') loadLostFound();
+
+    if (tab === 'competitions') loadCompetitions();
+    if (tab === 'attendance') loadAttendance();
+    if (tab === 'menu') loadMenu();
+    if (tab === 'students') loadStudents();
+    if (tab === 'freeclass') loadFreeClass();
+
+    if (tab === 'timetable') {
+      if (userRoll && cloudSessions && cloudSessions.length > 0 && !selectedTTRoll) {
+        selectedTTRoll = userRoll;
+        const input = document.getElementById('ttSearchInput');
+        if (input) input.value = userRoll;
+        generateTimetable(userRoll);
+      }
+    }
+  } catch (err) {
+    console.error('switchTab error:', err);
   }
 };
 
@@ -2797,6 +2807,15 @@ let selectedTTRoll = null;
 
 window.handleOpenTimetable = function() {
   switchTab('timetable');
+  setTimeout(() => {
+    const input = document.getElementById('ttSearchInput');
+    if (input) {
+      input.focus();
+      if (!input.value.trim()) {
+        filterTimetableSearch('25');
+      }
+    }
+  }, 60);
 };
 
 window.filterTimetableSearch = function(val) {
